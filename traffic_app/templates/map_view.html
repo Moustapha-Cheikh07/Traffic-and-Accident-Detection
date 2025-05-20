@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="map-container">
+    <div id="traffic-map">
+        {{ map_html|safe }}
+    </div>
+    <div class="map-controls">
+        <div class="control-panel">
+            <h3>Contrôles de la carte</h3>
+            <form method="GET">
+                <div class="time-filter">
+                    <label for="time-range">Période :</label>
+                    <select id="time-range" name="time_range" onchange="this.form.submit()">
+                        <option value="1" {% if time_range == '1' %}selected{% endif %}>Dernière heure</option>
+                        <option value="24" {% if time_range == '24' %}selected{% endif %}>Dernières 24 heures</option>
+                        <option value="168" {% if time_range == '168' %}selected{% endif %}>Dernière semaine</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="legend">
+            <h3>Légende</h3>
+            <div class="legend-item">
+                <span class="legend-color" style="background: green;"></span>
+                <span>Trafic fluide</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: yellow;"></span>
+                <span>Trafic modéré</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: red;"></span>
+                <span>Embouteillage</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

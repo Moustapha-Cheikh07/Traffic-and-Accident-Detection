@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+<style>
+    #map-container {
+        height: calc(100vh - 250px);
+        min-height: 500px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .map-controls {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .legend {
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        <i class="fas fa-map-marked-alt me-2"></i>
+                        Carte du Trafic
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- COLONNE FILTRAGE -->
+                        <div class="col-md-3">
+                            <div class="map-controls">
+                                <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filtres</h5>
+
+                                <!-- Formulaire de filtres -->
+                                <form id="filter-form">
+                                    <!-- Sélecteur de ville -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Ville</label>
+                                        <select class="form-select" name="selected_city" id="city-select">
+                                            {% for city in cities %}
+                                                <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Sélecteur de localisation spécifique -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Localisation</label>
+                                        <select class="form-select" name="selected_location" id="location-select">
+                                            <option value="">Toutes les localisations</option>
+                                            {% for location in available_locations %}
+                                                <option value="{{ location }}" {% if selected_location == location %}selected{% endif %}>{{ location }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Sélecteur de date -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Date</label>
+                                        <select class="form-select" name="selected_date" id="date-select">
+                                            <option value="">Toutes les dates</option>
+                                            {% for date in available_dates %}
+                                                <option value="{{ date|date:'Y-m-d' }}" {% if selected_date == date|date:'Y-m-d' %}selected{% endif %}>
+                                                    {{ date|date:"d/m/Y" }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Add this to the map controls -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Options</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="show-accidents" name="show_accidents" {% if show_accidents %}checked{% endif %}>
+                                            <label class="form-check-label" for="show-accidents">Afficher les accidents</label>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- Légende -->
+                                <div class="legend">
+                                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Légende</h5>
+                                    <div><span style="color:green;">⬤</span> Trafic fluide</div>
+                                    <div><span style="color:orange;">⬤</span> Trafic modéré</div>
+                                    <div><span style="color:red;">⬤</span> Trafic dense</div>
+                                    <div><span style="color:darkred;">⬤</span> Accident</div>
+                                    {% if accident_count > 0 %}
+                                    <div class="mt-2">
+                                        <strong>{{ accident_count }} accident(s) affiché(s)</strong>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- COLONNE CARTE -->
+                        <div class="col-md-9">
+                            <div id="map-container">
+                                {{ map|safe }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    document.querySelectorAll('#city-select, #location-select, #date-select').forEach(select => {
+        select.addEventListener('change', function() {
+            document.getElementById('filter-form').submit();
+        });
+    });
+    
+    // Ajouter un écouteur pour le switch d'affichage des accidents
+    document.getElementById('show-accidents').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
+</script>
+
+{% endblock %}

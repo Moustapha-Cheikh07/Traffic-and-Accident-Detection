@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center py-5">
+    <div class="container">
+        <h1 class="display-4 mb-4 fade-in">Analyse de Trafic Routier en Temps Réel</h1>
+        <p class="lead mb-5 fade-in">Utilisez l'intelligence artificielle pour surveiller et analyser le trafic routier en temps réel. Détectez les accidents, prévenez les embouteillages et améliorez la sécurité routière.</p>
+        <div class="row justify-content-center fade-in">
+            <div class="col-md-4">
+                <a href="{% url 'analyze_local' %}" class="btn btn-primary btn-lg w-100 mb-3">
+                    <i class="fas fa-camera me-2"></i>Commencer l'analyse
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Fonctionnalités Principales</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-video fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Analyse en Temps Réel</h5>
+                        <p class="card-text">Surveillez le trafic en direct via webcam ou vidéo uploadée avec une détection instantanée des véhicules et des événements.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Détection d'Accidents</h5>
+                        <p class="card-text">Détectez automatiquement les accidents et recevez des alertes instantanées pour une intervention rapide.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Statistiques Détaillées</h5>
+                        <p class="card-text">Accédez à des analyses approfondies du trafic avec des graphiques et des rapports détaillés.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Comment ça marche ?</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="step-card text-center">
+                    <div class="step-number">1</div>
+                    <h5>Choisissez votre source</h5>
+                    <p>Utilisez votre webcam ou téléchargez une vidéo du trafic à analyser.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="step-card text-center">
+                    <div class="step-number">2</div>
+                    <h5>Analyse automatique</h5>
+                    <p>Notre IA analyse en temps réel les véhicules et les événements routiers.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="step-card text-center">
+                    <div class="step-number">3</div>
+                    <h5>Résultats instantanés</h5>
+                    <p>Obtenez des statistiques détaillées et des alertes en temps réel.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h2 class="mb-4">Prêt à commencer ?</h2>
+                <p class="lead mb-4">Rejoignez-nous dans l'amélioration de la sécurité routière grâce à l'intelligence artificielle.</p>
+                <a href="{% url 'analyze_local' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-play me-2"></i>Démarrer l'analyse
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)), url('{% static "images/traffic-bg.jpg" %}') center/cover;
+        color: white;
+        padding: 100px 0;
+    }
+
+    .step-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        height: 100%;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-weight: bold;
+    }
+
+    .cta-section {
+        background: var(--primary-color);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}
+

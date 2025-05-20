@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        <i class="fas fa-video me-2"></i>
+                        Analyse de Trafic Routier
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <!-- Section Upload -->
+                    <div class="upload-section mb-4">
+                        <form id="video-upload-form" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="video" class="form-label">
+                                    <i class="fas fa-file-video me-2"></i>
+                                    Sélectionner une vidéo
+                                </label>
+                                <input type="file" class="form-control" id="video" name="video" accept="video/*" required>
+                                <div class="form-text">Formats acceptés : MP4, AVI, MOV (max. 500MB)</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="location" class="form-label">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    Localisation
+                                </label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       value="Nouakchott, Mauritanie" required readonly>
+                            </div>
+                            <!-- Ajout de la carte interactive -->
+                            <div id="map" style="height: 300px; border-radius: 10px;"></div>
+                            <button type="submit" class="btn btn-primary w-100 mt-3">
+                                <i class="fas fa-play me-2"></i>
+                                Analyser la vidéo
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Section Loading -->
+                    <div id="loading" class="text-center p-4" style="display: none;">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <h5>Traitement en cours...</h5>
+                        <div class="progress mt-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Section Résultats -->
+                    <div id="results" class="mt-4" style="display: none;">
+                        <h3 class="mb-4 text-center">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            Résultats de l'analyse
+                        </h3>
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-car me-2"></i>
+                                            Véhicules détectés
+                                        </h5>
+                                        <h2 id="vehicle-count" class="display-4">0</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-traffic-light me-2"></i>
+                                            Niveau de congestion
+                                        </h5>
+                                        <h2 id="congestion-level" class="display-4">0%</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Nouvelle carte pour la détection d'accident -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-12">
+                                <div id="accident-card" class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Détection d'accident
+                                        </h5>
+                                        <div id="accident-status" class="py-3">
+                                            <span id="no-accident" class="d-none">
+                                                <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                                                <h4 class="text-success">Aucun accident détecté</h4>
+                                            </span>
+                                            <span id="accident-detected" class="d-none">
+                                                <i class="fas fa-exclamation-circle text-danger fa-3x mb-3"></i>
+                                                <h4 class="text-danger">ACCIDENT DÉTECTÉ</h4>
+                                                <p class="text-danger">Un accident potentiel a été identifié dans cette vidéo</p>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="video-preview" class="mt-4">
+                            <div class="ratio ratio-16x9">
+                                <video controls class="rounded shadow">
+                                    <source src="" type="video/mp4">
+                                    Votre navigateur ne supporte pas la lecture de vidéos.
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('video-upload-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const loading = document.getElementById('loading');
+    const results = document.getElementById('results');
+    const progressBar = document.querySelector('.progress-bar');
+    
+    try {
+        loading.style.display = 'block';
+        results.style.display = 'none';
+        
+        // Animation de la barre de progression
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            if (progress < 90) {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+            }
+        }, 500);
+        
+        const response = await fetch('/upload-video/', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+        
+        if (!data.success) {
+            throw new Error(data.error);
+        }
+        
+        // Afficher les résultats avec animation
+        const vehicleCountEl = document.getElementById('vehicle-count');
+        const congestionEl = document.getElementById('congestion-level');
+        
+        // Afficher les résultats détaillés
+        if (data.results) {
+            // Afficher le nombre de véhicules (préférer le max_vehicles_per_frame s'il est disponible)
+            const vehicleCount = data.results.max_vehicles_per_frame || data.results.vehicle_count || 0;
+            vehicleCountEl.textContent = vehicleCount;
+            
+            // Afficher le niveau de congestion
+            const congestionLevel = data.results.congestion_level || 0;
+            congestionEl.textContent = (congestionLevel * 100).toFixed(1) + '%';
+            
+            // Ajouter un petit indicateur si c'est un doublon déjà analysé
+            if (data.duplicate) {
+                const resultHeading = document.querySelector('#results h3');
+                if (resultHeading) {
+                    resultHeading.innerHTML = 'Résultats <small class="text-muted">(Vidéo déjà analysée)</small>';
+                }
+            }
+            
+            // Si des informations de véhicules par type sont disponibles, les afficher
+            if (data.results.vehicle_type_summary) {
+                const vehicleTypeEl = document.getElementById('vehicle-types');
+                if (vehicleTypeEl) {
+                    vehicleTypeEl.textContent = data.results.vehicle_type_summary;
+                    vehicleTypeEl.parentElement.style.display = 'block';
+                }
+            }
+        }
+        
+        // Afficher l'état de détection d'accident
+        const noAccidentEl = document.getElementById('no-accident');
+        const accidentDetectedEl = document.getElementById('accident-detected');
+        const accidentCard = document.getElementById('accident-card');
+        
+        if (data.results.has_accident) {
+            noAccidentEl.classList.add('d-none');
+            accidentDetectedEl.classList.remove('d-none');
+            accidentCard.classList.add('bg-danger', 'bg-opacity-10');
+            accidentCard.classList.remove('bg-light');
+        } else {
+            accidentDetectedEl.classList.add('d-none');
+            noAccidentEl.classList.remove('d-none');
+            accidentCard.classList.add('bg-light');
+            accidentCard.classList.remove('bg-danger', 'bg-opacity-10');
+        }
+        
+        // Afficher la vidéo traitée
+        if (data.results.processed_video_url) {
+            const video = document.querySelector('#video-preview video');
+            if (video) {
+                video.src = data.results.processed_video_url;
+                video.load(); // Forcer le rechargement de la vidéo
+            }
+        }
+        
+        results.style.display = 'block';
+        
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: error.message || 'Une erreur est survenue lors du traitement',
+        });
+    } finally {
+        loading.style.display = 'none';
+    }
+});
+</script>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var map = L.map('map').setView([18.079, -15.965], 12);
+    
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+    
+        var marker = L.marker([18.079, -15.965], { draggable: true }).addTo(map);
+    
+        function reverseGeocode(lat, lon) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        document.getElementById('location').value = data.display_name; 
+                    } else {
+                        document.getElementById('location').value = lat.toFixed(6) + ", " + lon.toFixed(6);
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur de géocodage inverse :", error);
+                    document.getElementById('location').value = lat.toFixed(6) + ", " + lon.toFixed(6);
+                });
+        }
+    
+        marker.on('dragend', function (event) {
+            var latlng = marker.getLatLng();
+            reverseGeocode(latlng.lat, latlng.lng);
+        });
+    
+        map.on('click', function (e) {
+            marker.setLatLng(e.latlng);
+            reverseGeocode(e.latlng.lat, e.latlng.lng);
+        });
+    });
+    </script>
+    
+{% endblock %}
+{% endblock %}

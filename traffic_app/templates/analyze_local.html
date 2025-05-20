@@ -1,0 +1,623 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2>Analyse de Trafic en Direct</h2>
+            
+            <!-- Onglets -->
+            <ul class="nav nav-tabs" id="analysisTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="webcam-tab" data-bs-toggle="tab" data-bs-target="#webcam" type="button" role="tab" aria-controls="webcam" aria-selected="true">
+                        Webcam
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="false">
+                        Télécharger une Vidéo
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Contenu des onglets -->
+            <div class="tab-content" id="analysisTabContent">
+                <!-- Onglet Webcam -->
+                <div class="tab-pane fade show active" id="webcam" role="tabpanel" aria-labelledby="webcam-tab">
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-body">
+                                    <video id="webcamVideo" autoplay playsinline class="w-100"></video>
+                                    <canvas id="webcamCanvas" style="display: none;"></canvas>
+                                    <div class="mt-3">
+                                        <button id="startWebcam" class="btn btn-primary">Démarrer la Webcam</button>
+                                        <button id="stopWebcam" class="btn btn-danger" style="display: none;">Arrêter la Webcam</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div id="webcamResults" class="card" style="display: none;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Résultats en Temps Réel</h5>
+                                    <div class="alert alert-danger" id="accidentAlert" style="display: none;">
+                                        <strong>⚠️ ATTENTION!</strong> Accident détecté!
+                                    </div>
+                                    <p><strong>Véhicules détectés:</strong> <span id="vehicleCount">0</span></p>
+                                    <p><strong>Types de véhicules:</strong> <span id="vehicleTypes">-</span></p>
+                                    <p><strong>Niveau de congestion:</strong></p>
+                                    <div class="progress">
+                                        <div id="congestionLevel" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Onglet Upload -->
+                <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                    <div class="row mt-4">
+                        <div class="col-md-7">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title mb-3">Sélectionner la localisation</h5>
+                                    <div id="locationMap" style="height: 400px;"></div>
+                                    <div class="mt-2">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="searchAddress" placeholder="Rechercher une adresse...">
+                                            <button class="btn btn-outline-secondary" type="button" id="searchButton">Rechercher</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Télécharger la vidéo</h5>
+                                    <form id="uploadForm" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="latitude" name="latitude">
+                                        <input type="hidden" id="longitude" name="longitude">
+                                        <div class="mb-3">
+                                            <label for="location" class="form-label">Adresse sélectionnée</label>
+                                            <textarea class="form-control" id="location" name="location" rows="2" readonly></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="videoFile" class="form-label">Sélectionner une vidéo</label>
+                                            <input type="file" class="form-control" id="videoFile" name="video" accept="video/*" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary" disabled id="analyzeBtn">Analyser la Vidéo</button>
+                                    </form>
+                                    <div id="uploadProgress" class="mt-3" style="display: none;">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<style>
+    .progress {
+        height: 25px;
+    }
+    .progress-bar {
+        transition: width 0.5s ease;
+        min-width: 2em;
+    }
+    #webcamVideo {
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .nav-tabs .nav-link {
+        cursor: pointer;
+        color: #0d6efd;
+        font-weight: 500;
+    }
+    .nav-tabs .nav-link:hover {
+        color: #0a58ca;
+        background-color: #f8f9fa;
+    }
+    .nav-tabs .nav-link.active {
+        color: white;
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    #accidentAlert {
+        animation: pulse 1.5s infinite;
+        background-color: #dc3545;
+        color: white;
+        font-size: 1.1em;
+        border: none;
+        margin-bottom: 20px;
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+    }
+    #accidentAlert strong {
+        font-size: 1.2em;
+    }
+    @keyframes pulse {
+        0% { 
+            transform: scale(1);
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+        50% { 
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.8);
+        }
+        100% { 
+            transform: scale(1);
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+        }
+    }
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        background-color: #dc3545;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: none;
+        animation: slideIn 0.5s ease-out;
+    }
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    #locationMap {
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    #location {
+        resize: none;
+    }
+    .location-search-box {
+        margin-top: 10px;
+        padding: 10px;
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .geocoder-control-input {
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script>
+    // Configuration de la webcam
+    let webcamStream = null;
+    let isProcessing = false;
+    const video = document.getElementById('webcamVideo');
+    const canvas = document.getElementById('webcamCanvas');
+    const startBtn = document.getElementById('startWebcam');
+    const stopBtn = document.getElementById('stopWebcam');
+    const resultsDiv = document.getElementById('webcamResults');
+    const vehicleCountSpan = document.getElementById('vehicleCount');
+    const vehicleTypesSpan = document.getElementById('vehicleTypes');
+    const congestionLevelBar = document.getElementById('congestionLevel');
+    const accidentAlert = document.getElementById('accidentAlert');
+
+    // Gestionnaire pour le démarrage de la webcam
+    startBtn.addEventListener('click', async () => {
+        try {
+            webcamStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    width: 640,
+                    height: 480,
+                    facingMode: 'environment'
+                } 
+            });
+            video.srcObject = webcamStream;
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+            resultsDiv.style.display = 'block';
+            startProcessing();
+            console.log("Webcam démarrée avec succès");
+        } catch (err) {
+            console.error('Erreur accès webcam:', err);
+            alert('Impossible d\'accéder à la webcam. Vérifiez que vous avez donné les permissions nécessaires.');
+        }
+    });
+
+    // Gestionnaire pour l'arrêt de la webcam
+    stopBtn.addEventListener('click', () => {
+        if (webcamStream) {
+            webcamStream.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+            webcamStream = null;
+        }
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+        resultsDiv.style.display = 'none';
+        isProcessing = false;
+        console.log("Webcam arrêtée");
+    });
+
+    // Configuration de la carte
+    let map = null;
+    let marker = null;
+    let geocoder = null;
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const locationInput = document.getElementById('location');
+    const latitudeInput = document.getElementById('latitude');
+    const longitudeInput = document.getElementById('longitude');
+    const searchInput = document.getElementById('searchAddress');
+    const searchButton = document.getElementById('searchButton');
+
+    // Fonction pour obtenir l'adresse à partir des coordonnées
+    async function reverseGeocode(lat, lng) {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`);
+            const data = await response.json();
+            
+            if (data.display_name) {
+                // Construire une adresse formatée
+                const address = [];
+                if (data.address) {
+                    if (data.address.road) address.push(data.address.road);
+                    if (data.address.house_number) address.push(data.address.house_number);
+                    if (data.address.suburb) address.push(data.address.suburb);
+                    if (data.address.city || data.address.town) address.push(data.address.city || data.address.town);
+                }
+                return address.length > 0 ? address.join(', ') : data.display_name;
+            }
+            return 'Adresse non trouvée';
+        } catch (error) {
+            console.error('Erreur de géocodage inverse:', error);
+            return 'Erreur lors de la récupération de l\'adresse';
+        }
+    }
+
+    // Fonction pour rechercher une adresse
+    async function searchAddress(query) {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+            const data = await response.json();
+            
+            if (data && data.length > 0) {
+                const result = data[0];
+                const lat = parseFloat(result.lat);
+                const lon = parseFloat(result.lon);
+                
+                // Centrer la carte et placer le marqueur
+                map.setView([lat, lon], 16);
+                updateMarker(lat, lon);
+            } else {
+                alert('Aucun résultat trouvé pour cette adresse');
+            }
+        } catch (error) {
+            console.error('Erreur de recherche d\'adresse:', error);
+            alert('Erreur lors de la recherche de l\'adresse');
+        }
+    }
+
+    // Fonction pour mettre à jour le marqueur et l'adresse
+    async function updateMarker(lat, lng) {
+        if (marker) {
+            map.removeLayer(marker);
+        }
+        
+        marker = L.marker([lat, lng]).addTo(map);
+        
+        // Mettre à jour les champs cachés
+        latitudeInput.value = lat;
+        longitudeInput.value = lng;
+        
+        // Obtenir et afficher l'adresse
+        const address = await reverseGeocode(lat, lng);
+        locationInput.value = address;
+        
+        // Activer le bouton d'analyse
+        analyzeBtn.disabled = false;
+    }
+
+    // Initialiser la carte quand l'onglet upload est affiché
+    document.getElementById('upload-tab').addEventListener('click', () => {
+        if (!map) {
+            setTimeout(() => {
+                map = L.map('locationMap').setView([18.0735, -15.9582], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                // Ajouter le contrôle de géocodage
+                geocoder = L.Control.geocoder({
+                    defaultMarkGeocode: false
+                }).addTo(map);
+
+                // Gestionnaire de clic sur la carte
+                map.on('click', async (e) => {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    await updateMarker(lat, lng);
+                });
+
+                // Gestionnaire de recherche d'adresse
+                searchButton.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        searchAddress(query);
+                    }
+                });
+
+                // Permettre la recherche en appuyant sur Entrée
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const query = searchInput.value.trim();
+                        if (query) {
+                            searchAddress(query);
+                        }
+                    }
+                });
+            }, 100);
+        }
+    });
+
+    // Ajouter une div pour la notification en dehors du conteneur principal
+    const notificationDiv = document.createElement('div');
+    notificationDiv.className = 'notification';
+    notificationDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> ATTENTION: Accident détecté!';
+    document.body.appendChild(notificationDiv);
+
+    // Fonction pour afficher la notification
+    function showNotification(duration = 5000) {
+        notificationDiv.style.display = 'block';
+        // Jouer un son d'alerte
+        const alertSound = new Audio('/static/sounds/alert.mp3');
+        alertSound.play().catch(e => console.log('Erreur audio:', e));
+        
+        setTimeout(() => {
+            notificationDiv.style.display = 'none';
+        }, duration);
+    }
+
+    // Fonction pour capturer et envoyer une frame
+    async function processFrame() {
+        if (!isProcessing || !webcamStream) return;
+
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        try {
+            const imageData = canvas.toDataURL('image/jpeg', 0.9); // Augmenter la qualité de l'image
+            
+            const response = await fetch('/webcam-feed/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ 
+                    image: imageData,
+                    timestamp: Date.now(), // Ajouter un timestamp pour le suivi
+                    previous_had_accident: accidentAlert.style.display === 'block' // Informer le backend de l'état précédent
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    updateResults(data);
+                } else {
+                    console.error("Erreur dans la réponse:", data.error);
+                }
+            }
+        } catch (err) {
+            console.error('Erreur traitement frame:', err);
+        }
+
+        if (isProcessing) {
+            // Réduire légèrement l'intervalle pour une détection plus réactive
+            setTimeout(() => requestAnimationFrame(processFrame), 400);
+        }
+    }
+
+    // Fonction pour mettre à jour l'affichage des résultats
+    function updateResults(data) {
+        console.log("Mise à jour des résultats:", data);
+        
+        vehicleCountSpan.textContent = data.vehicle_count;
+        
+        const vehicleTypes = Object.entries(data.vehicle_types)
+            .map(([type, count]) => `${count} ${type}`)
+            .join(', ');
+        vehicleTypesSpan.textContent = vehicleTypes || '-';
+        
+        const congestionPercent = Math.round(data.congestion_level * 100);
+        congestionLevelBar.style.width = `${congestionPercent}%`;
+        congestionLevelBar.textContent = `${congestionPercent}%`;
+        
+        congestionLevelBar.className = 'progress-bar';
+        if (congestionPercent > 80) {
+            congestionLevelBar.classList.add('bg-danger');
+        } else if (congestionPercent > 50) {
+            congestionLevelBar.classList.add('bg-warning');
+        } else {
+            congestionLevelBar.classList.add('bg-success');
+        }
+        
+        // Amélioration de la détection des accidents
+        if (data.has_accident) {
+            accidentAlert.style.display = 'block';
+            // Afficher la notification uniquement lors de la première détection
+            if (accidentAlert.dataset.shown !== 'true') {
+                showNotification();
+                accidentAlert.dataset.shown = 'true';
+            }
+        } else {
+            accidentAlert.style.display = 'none';
+            accidentAlert.dataset.shown = 'false';
+        }
+    }
+
+    function startProcessing() {
+        console.log("Démarrage du traitement");
+        isProcessing = true;
+        processFrame();
+    }
+
+    // Gestionnaire pour le formulaire d'upload
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const progressBar = document.querySelector('#uploadProgress .progress-bar');
+        const uploadProgress = document.getElementById('uploadProgress');
+        
+        uploadProgress.style.display = 'block';
+        progressBar.style.width = '0%';
+        analyzeBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/upload-video/', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    alert('Vidéo analysée avec succès!\n\n' + 
+                          `Véhicules détectés: ${result.results.vehicle_count}\n` +
+                          `Types de véhicules: ${result.results.vehicle_type_summary}\n` +
+                          `Niveau de congestion: ${Math.round(result.results.congestion_level * 100)}%`);
+                } else {
+                    alert('Erreur lors de l\'analyse: ' + result.error);
+                }
+            } else {
+                alert('Erreur lors de l\'envoi de la vidéo');
+            }
+        } catch (err) {
+            console.error('Erreur:', err);
+            alert('Erreur lors de l\'envoi de la vidéo');
+        } finally {
+            uploadProgress.style.display = 'none';
+            analyzeBtn.disabled = false;
+        }
+    });
+
+    // Fonction pour mettre à jour les événements
+    function updateEvents(events) {
+        const eventsList = document.getElementById('events-list');
+        
+        events.forEach(event => {
+            const eventElement = document.createElement('div');
+            eventElement.className = 'list-group-item list-group-item-action';
+            
+            let icon = '';
+            let bgClass = '';
+            
+            switch(event.type) {
+                case 'accident':
+                    icon = '⚠️';
+                    bgClass = 'list-group-item-danger';
+                    break;
+                case 'roadwork':
+                    icon = '🚧';
+                    bgClass = 'list-group-item-warning';
+                    break;
+                case 'police':
+                    icon = '👮';
+                    bgClass = 'list-group-item-info';
+                    break;
+            }
+            
+            eventElement.classList.add(bgClass);
+            eventElement.innerHTML = `
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">${icon} ${event.type.toUpperCase()}</h6>
+                    <small>${new Date().toLocaleTimeString()}</small>
+                </div>
+                <p class="mb-1">Sévérité: ${event.severity}</p>
+                <small>Confiance: ${(event.confidence * 100).toFixed(1)}%</small>
+            `;
+            
+            // Ajouter au début de la liste
+            eventsList.insertBefore(eventElement, eventsList.firstChild);
+            
+            // Limiter à 10 événements affichés
+            if (eventsList.children.length > 10) {
+                eventsList.removeChild(eventsList.lastChild);
+            }
+            
+            // Jouer un son d'alerte
+            playAlertSound(event.type);
+        });
+    }
+    
+    // Fonction pour jouer un son d'alerte
+    function playAlertSound(eventType) {
+        const audio = new Audio();
+        switch(eventType) {
+            case 'accident':
+                audio.src = '/static/sounds/accident_alert.mp3';
+                break;
+            case 'roadwork':
+                audio.src = '/static/sounds/roadwork_alert.mp3';
+                break;
+            case 'police':
+                audio.src = '/static/sounds/police_alert.mp3';
+                break;
+        }
+        audio.play().catch(e => console.log('Erreur audio:', e));
+    }
+    
+    // Modifier la fonction de traitement de la webcam
+    async function processWebcamFrame(imageData) {
+        try {
+            const response = await fetch('/webcam-feed/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image: imageData })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Mettre à jour les compteurs
+                document.getElementById('vehicle-count').textContent = data.vehicle_count;
+                document.getElementById('congestion-level').textContent = 
+                    `${(data.congestion_level * 100).toFixed(1)}%`;
+                
+                // Mettre à jour les événements s'il y en a
+                if (data.events_detected && data.events_detected.length > 0) {
+                    updateEvents(data.events_detected);
+                }
+            }
+        } catch (error) {
+            console.error('Erreur lors du traitement:', error);
+        }
+    }
+</script>
+{% endblock %}
