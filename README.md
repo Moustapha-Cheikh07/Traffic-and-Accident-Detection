@@ -136,7 +136,9 @@
 
   </div>
 
-
+  <footer>
+    &copy; 2025 TrafficAI | Projet open-source pour villes intelligentes
+  </footer>
 
 </body>
 </html>
