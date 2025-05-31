@@ -1,111 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TrafficAI – Analyse Vidéo du Trafic par IA</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f9fc;
+      color: #333;
+    }
 
-<h1 align="center">📊 Plateforme de suivi de l'indice des prix à la consommation en Mauritanie</h1>
+    header {
+      background-color: #004d7a;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
 
-<p align="center">
-  <b>Une plateforme interactive pour analyser l'évolution de l'INPC en Mauritanie, comprendre les dynamiques économiques et prendre des décisions éclairées.</b>  
-</p>
+    h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
 
-<p align="center">
-  🔍 <i>Suivi des prix</i> | 📈 <i>Visualisation des tendances économiques</i> | 💰 <i>Indicateurs économiques clés</i>  
-</p>
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
 
----
+    section {
+      margin-bottom: 40px;
+    }
 
-## 🌍 Table des Matières
-🔹 [📖 Description du Projet](#-description-du-projet)  
-🔹 [🎯 Objectif](#-objectif)  
-🔹 [⚙️ Technologies Utilisées](#%EF%B8%8F-technologies-utilisées)  
-🔹 [🚀 Fonctionnalités Clés](#-fonctionnalités-clés)  
-🔹 [📸 Aperçu Visuel](#-aperçu-visuel)  
-🔹 [📦 Installation & Utilisation](#-installation--utilisation)   
-🔹 [📬 Contact](#-contact)  
+    h2 {
+      color: #004d7a;
+      font-size: 1.5rem;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+    }
 
----
+    ul {
+      list-style: none;
+      padding: 0;
+    }
 
-## 📖 Description du Projet  
-**Suivi de l'Indice des Prix à la Consommation en Mauritanie** est un outil interactif conçu pour suivre et analyser les fluctuations des prix des biens et services en Mauritanie. Grâce à des graphiques interactifs et des filtres avancés, cette plateforme vous permet de comprendre en profondeur les dynamiques économiques du pays.
+    ul li::before {
+      content: "✅";
+      margin-right: 10px;
+      color: #28a745;
+    }
 
-- **📊 Interface intuitive** pour explorer les variations des prix dans différentes catégories de produits.
-- **📉 Analyse détaillée** des tendances économiques avec des visualisations de données dynamiques.
-- **🛒 Comparaison** des prix entre régions et catégories, permettant une vue d'ensemble complète des tendances des prix.
+    .tech, .use-cases {
+      background-color: #e8f0fe;
+      padding: 15px;
+      border-left: 4px solid #004d7a;
+      border-radius: 5px;
+    }
 
---- 
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #004d7a;
+      color: white;
+    }
+  </style>
+</head>
+<body>
 
-## 🎯 Objectif  
-Le principal objectif de ce projet est de fournir une plateforme **dynamique** et **précise** pour l’analyse des prix à la consommation en Mauritanie. En offrant des outils interactifs, ce projet vise à :
+  <header>
+    <h1>🚦 TrafficAI – Détection intelligente du trafic par IA</h1>
+    <p>Analyse vidéo en temps réel pour une circulation plus fluide et plus sûre</p>
+  </header>
 
-- **Faciliter l'accès** à l'information économique pour les chercheurs, économistes, décideurs, et citoyens.
-- **Soutenir la prise de décisions stratégiques** dans le domaine économique, notamment pour les politiques publiques et les entreprises.
-- **Proposer une plateforme évolutive** qui pourra intégrer d'autres indicateurs économiques au fur et à mesure.
+  <div class="container">
+    
+    <section>
+      <h2>🎯 Problématique</h2>
+      <p>
+        Les embouteillages et les incidents routiers causent de lourdes pertes économiques, écologiques et humaines. La détection tardive des accidents ou des ralentissements empêche une intervention rapide et efficace.
+      </p>
+    </section>
 
-🎯 **Pour qui ?**  
-- **Économistes & chercheurs** 📊  
-- **Gouvernements & institutions** 📈  
-- **Entrepreneurs & investisseurs** 💰  
-- **Citoyens curieux des tendances économiques** 🏠  
+    <section>
+      <h2>💡 Notre solution</h2>
+      <p><strong>TrafficAI</strong> analyse les flux vidéo des caméras existantes pour :</p>
+      <ul>
+        <li>Mesurer la densité du trafic en temps réel</li>
+        <li>Détecter automatiquement les anomalies (accidents, ralentissements)</li>
+        <li>Prédire les embouteillages à venir grâce à l'IA</li>
+        <li>Envoyer des alertes automatiques aux autorités et usagers</li>
+      </ul>
+    </section>
 
----
+    <section>
+      <h2>✅ Bénéfices</h2>
+      <ul>
+        <li>Réduction des congestions et de la pollution</li>
+        <li>Optimisation des coûts en utilisant les infrastructures existantes</li>
+        <li>Amélioration de la sécurité routière</li>
+        <li>Déploiement simple et non intrusif</li>
+      </ul>
+    </section>
 
-## ⚙️ Technologies Utilisées  
+    <section class="use-cases">
+      <h2>📍 Cas d’usage</h2>
+      <ul>
+        <li>Carrefours urbains</li>
+        <li>Entrées et sorties d’autoroutes</li>
+        <li>Zones scolaires ou sensibles</li>
+        <li>Axes routiers à forte circulation</li>
+      </ul>
+    </section>
 
-| 🛠️ Technologie | 🚀 Rôle |
-|----------------|--------|
-| 🐍 **Python**   | Backend et traitement des données |
-| 🌍 **Django**   | Développement du serveur web |
-| 🗄️ **Sqlite** | Base de données |
-| 🎨 **HTML / CSS / JS** | Conception et développement de l'interface utilisateur |
-| 📊 **Chart.js / D3.js** | Visualisation interactive des données |
-| 🐳 **Docker**   | Conteneurisation et déploiement |
+    <section class="tech">
+      <h2>🧠 Technologies utilisées</h2>
+      <ul>
+        <li>Vision par ordinateur (OpenCV, YOLO...)</li>
+        <li>Deep Learning (TensorFlow / PyTorch)</li>
+        <li>Analyse en temps réel des flux vidéo</li>
+        <li>Envoi d’alertes via API ou système connecté</li>
+        <li>Dashboard de visualisation</li>
+      </ul>
+    </section>
 
----
+    <section>
+      <h2>🚀 Objectif</h2>
+      <p>
+        Déployer une plateforme intelligente, fiable et évolutive pour aider les collectivités à fluidifier le trafic, anticiper les accidents et améliorer la sécurité urbaine.
+      </p>
+    </section>
 
-## 🚀 Fonctionnalités Clés  
-✅ **📊 Tableau de bord interactif** – Suivi des prix par produit et région en temps réel.  
-✅ **🔍 Filtres avancés** – Sélection de catégories, périodes spécifiques, et comparaisons géographiques.  
-✅ **📈 Visualisation dynamique** – Graphiques interactifs comme les courbes de tendance, heatmaps, histogrammes, et plus encore.  
-✅ **📡 API RESTful** – Accès aux données sous forme de JSON pour les intégrateurs et développeurs.  
-✅ **🔐 Mode Admin** – Interface dédiée pour gérer et modifier les données via Django Admin.  
-✅ **🐳 Déploiement Dockerisé** – Facilité d'exécution et de déploiement sans configuration locale complexe.
-
----
-
-## 📸 Aperçu Visuel  
-
-### Vue d'une partie du tableau de bord :
-![Tableau de bord](images/a.png)
-
-### Visualisation de quelques produit :
-![Graphiques dynamiques](images/b.png)
-
----
-
-📬 Contact
-Pour toute question, suggestion ou collaboration, n'hésitez pas à me contacter :
+  </div>
 
 
-Email : 23007@esp.mr
 
-
-## 📦 Installation & Utilisation  
-
-Suivez ces étapes pour installer et lancer le projet sur votre machine locale :
-
-```bash
-# 1️⃣ Cloner le projet depuis GitHub
-git clone https://github.com/AmadouMamadouDiallo/Suivi-de-I-indice-des-prix-a-la-consommation-en-Mauritanie.git
-cd Suivi-de-I-indice-des-prix-a-la-consommation-en-Mauritanie
-
-# 2️⃣ Créer un environnement virtuel et installer les dépendances
-python -m venv venv
-source venv/bin/activate  # (Sous Windows: venv\Scripts\activate)
-pip install -r requirements.txt
-
-# 3️⃣ Appliquer les migrations de la base de données
-python manage.py migrate
-
-# 4️⃣ Lancer le serveur Django
-python manage.py runserver
-
-# 5️⃣ Accéder à l'application via votre navigateur
-http://127.0.0.1:8000/
-
+</body>
+</html>
