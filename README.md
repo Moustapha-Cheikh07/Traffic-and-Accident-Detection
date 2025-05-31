@@ -52,7 +52,7 @@ Le principal objectif de ce projet est de fournir une plateforme **dynamique** e
 |----------------|--------|
 | 🐍 **Python**   | Backend et traitement des données |
 | 🌍 **Django**   | Développement du serveur web |
-| 🗄️ **PostgreSQL** | Base de données |
+| 🗄️ **Sqlite** | Base de données |
 | 🎨 **HTML / CSS / JS** | Conception et développement de l'interface utilisateur |
 | 📊 **Chart.js / D3.js** | Visualisation interactive des données |
 | 🐳 **Docker**   | Conteneurisation et déploiement |
@@ -82,9 +82,8 @@ Le principal objectif de ce projet est de fournir une plateforme **dynamique** e
 📬 Contact
 Pour toute question, suggestion ou collaboration, n'hésitez pas à me contacter :
 
-LinkedIn : www.linkedin.com/in/amadou-diallo-ing04
 
-Email : 23217@esp.mr
+Email : 23007@esp.mr
 
 
 ## 📦 Installation & Utilisation  
