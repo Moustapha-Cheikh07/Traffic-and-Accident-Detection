@@ -1,56 +1,54 @@
-# 🚦 TrafficAI – Détection intelligente du trafic par IA
+# 🚦 TrafficAI – Intelligent Traffic Monitoring with AI
 
-> **Analyse vidéo en temps réel pour une circulation plus fluide et plus sûre**
-
----
-
-## 🎯 Problématique
-
-Les embouteillages et les incidents routiers causent de lourdes pertes économiques, écologiques et humaines. La détection tardive des accidents ou ralentissements empêche une intervention rapide et efficace.
+> **Real-time video analysis for safer and smoother urban mobility**
 
 ---
 
-## 💡 Notre solution
+## 🎯 The Challenge
 
-**TrafficAI** est une plateforme intelligente qui exploite l’intelligence artificielle pour analyser les flux vidéo et prédire les anomalies de circulation :
-
-- 📹 Analyse en temps réel des flux vidéo des caméras existantes
-- 🚧 Détection automatique des anomalies (accidents, ralentissements)
-- 📊 Prédiction des embouteillages à partir de données historiques et en direct
-- 🔔 Alertes automatiques envoyées aux autorités et aux usagers
+Traffic congestion and road incidents lead to significant economic, environmental, and human losses. Late detection of accidents or slowdowns delays emergency response and efficient traffic management.
 
 ---
 
-## ✅ Bénéfices
+## 💡 Our Solution
 
-- Réduction des congestions et de la pollution
-- Optimisation des coûts grâce aux infrastructures déjà en place
-- Sécurité renforcée, notamment aux abords des écoles et zones sensibles
-- Déploiement simple et non intrusif
+**TrafficAI** is a smart platform powered by artificial intelligence that analyzes live video streams and predicts traffic anomalies:
 
----
-
-## 📍 Cas d’usage
-
-- Carrefours urbains
-- Entrées/sorties d’autoroutes
-- Zones scolaires
-- Axes critiques à forte circulation
+* 📹 Real-time analysis of existing traffic camera feeds  
+* 🚧 Automatic detection of incidents (accidents, congestion, abnormal behavior)  
+* 📊 Congestion forecasting using live and historical data  
+* 🔔 Instant alerts sent to authorities and road users  
 
 ---
 
-## 🧠 Technologies utilisées
+## ✅ Key Benefits
 
-- Vision par ordinateur (OpenCV, YOLO, etc.)
-- Intelligence artificielle (TensorFlow / PyTorch)
-- Traitement vidéo en temps réel
-- API de notifications / systèmes embarqués
-- Dashboard de visualisation
+* Reduced traffic congestion and pollution  
+* Cost-effective solution using existing infrastructure  
+* Improved safety, especially near schools and sensitive areas  
+* Easy and non-intrusive deployment  
 
 ---
 
-## 🚀 Objectif
+## 📍 Use Cases
 
-Fournir aux villes une solution évolutive, intelligente et efficace pour fluidifier le trafic et anticiper les risques routiers en temps réel.
+* Urban intersections  
+* Highway entrances and exits  
+* School zones  
+* High-traffic or accident-prone areas  
 
+---
 
+## 🧠 Technologies Used
+
+* Computer Vision (OpenCV, YOLO, etc.)  
+* Artificial Intelligence (TensorFlow / PyTorch)  
+* Real-time video processing  
+* Alerting APIs and embedded systems  
+* Interactive visualization dashboard  
+
+---
+
+## 🚀 Our Goal
+
+To provide cities with a scalable, intelligent, and effective solution that enables real-time traffic optimization and proactive road safety management.
